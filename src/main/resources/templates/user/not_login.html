@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>스마트 릴레이</title>
+    <!-- Bootstrap CDN -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+</head>
+<body>
+<script type="text/javascript" th:inline="javascript">
+    var url = /*[[@{/user/login?fail=false}]]*/ '';
+    function tal(func) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'SMART RELAY',
+            text: '로그인 후 이용해주세요.'
+        }).then(func);
+    }
+    tal(go);
+    function go(){
+        location.href = url;
+    }
+</script>
+</body>
+</html>

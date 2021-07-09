@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<script type="text/javascript" th:inline="javascript">
+    var url = /*[[@{/admin/login?fail=false}]]*/ 'test';
+    alert("로그인 후 이용해주세요");
+    location.href = url;
+</script>
+</html>

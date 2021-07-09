@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>스마트 릴레이</title>
+    <!-- Bootstrap CDN -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+<!-- 상단 메뉴 부분 -->
+<nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top shadow-lg">
+    <a class="navbar-brand" th:href="@{/admin/main}">SMART-RELAY</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item" th:if="${adminUser.isLogin() == false}">
+                <a th:href="@{/admin/login}" class="nav-link">로그인</a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/admin/main}" class="nav-link">디바이스 등록</a>
+            </li>
+            <li class="nav-item" th:if="${adminUser.isLogin() == true}">
+                <a th:href="@{/admin/logout}" class="nav-link">로그아웃</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="container" style="margin-top:100px">
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h4>유저 생성 및 디바이스 등록</h4>
+                    <form th:action="@{/admin/main_pro}" th:object="${adminDeviceModel}" method="post">
+                        <div class="form-group">
+                            <label for="user_id">유저 아이디</label>
+                            <input type=text id="user_id" name="userId" class="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="user_id">유저 핸드폰 번호1</label>
+                            <input type=text id="phone_number_1_pro" name="phoneNumberOne" class="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="user_id">유저 핸드폰 번호2</label>
+                            <input type=text id="phone_number_2_pro" name="phoneNumberTwo" class="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="user_id">유저 핸드폰 번호3</label>
+                            <input type=text id="phone_number_3_pro" name="phoneNumberThree" class="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="user_pw">유저 비밀번호</label>
+                            <input type="text" id="user_pw" name="userPw" class="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="user_pw">유저 디바이스 아이디</label>
+                            <div id="deviceBox">
+                                <input type="text" id="deviceId1" name="deviceId" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-primary">전송</button>
+                        </div>
+                    </form>
+                    <div class="form-group text-center">
+                        <button id="devicePlus" class="btn btn-primary">디바이스+</button>   <button id="deviceMinus" class="btn btn-primary">디바이스-</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6" style="display: none;">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h4>유저 디바이스 추가 등록</h4>
+                    <form th:action="@{/admin/main_add_pro}" th:object="${adminDeviceModel}" method="post">
+                        <div class="form-group">
+                            <label for="user_id">유저 아이디</label>
+                            <input type=text id="user_id" name="userId" class="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="user_id">유저 핸드폰 번호1</label>
+                            <input type=text id="phone_number_1_mod" name="phoneNumberOne" class="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="user_id">유저 핸드폰 번호2</label>
+                            <input type=text id="phone_number_2_mod" name="phoneNumberTwo" class="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="user_id">유저 핸드폰 번호3</label>
+                            <input type=text id="phone_number_3_mod" name="phoneNumberThree" class="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="user_pw">유저 디바이스 아이디</label>
+                            <div id="deviceBoxAdd">
+                                <input type="text" id="deviceIdAdd1" name="deviceId" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-primary">전송</button>
+                        </div>
+                    </form>
+                    <div class="form-group text-center">
+                        <button id="devicePlusAdd" class="btn btn-primary">디바이스+</button>   <button id="deviceMinusAdd" class="btn btn-primary">디바이스-</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6" style="display: none;">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h4>유저 디바이스 삭제</h4>
+                    <form th:action="@{/admin/main_del_pro}" th:object="${adminDeviceModel}" method="post">
+                        <div class="form-group">
+                            <label for="user_id">유저 아이디</label>
+                            <input type=text id="user_id" name="userId" class="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="user_pw">유저 비밀번호</label>
+                            <input type="text" id="user_pw" name="userPw" class="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="user_pw">유저 디바이스 아이디</label>
+                            <div id="deviceBoxDel">
+                                <input type="text" id="deviceIdDel1" name="deviceId" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-primary">전송</button>
+                        </div>
+                    </form>
+                    <div class="form-group text-center">
+                        <button id="devicePlusDel" class="btn btn-primary">디바이스+</button>   <button id="deviceMinusDel" class="btn btn-primary">디바이스-</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6" style="display: none;">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h4>유저 삭제</h4>
+                    <form th:action="@{/admin/main_pro}" th:object="${adminDeviceModel}" method="post">
+                        <div class="form-group">
+                            <label for="user_id">유저 아이디</label>
+                            <input type=text id="user_id" name="userId" class="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="user_pw">유저 비밀번호</label>
+                            <input type="text" id="user_pw" name="userPw" class="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="user_pw">유저 디바이스 아이디</label>
+                            <div id="deviceBoxDelUser">
+                                <input type="text" id="deviceIdDelUser1" name="deviceId" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-primary">전송</button>
+                        </div>
+                    </form>
+                    <div class="form-group text-center">
+                        <button id="devicePlusDelUser" class="btn btn-primary">디바이스+</button>   <button id="deviceMinusDelUser" class="btn btn-primary">디바이스-</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var devicePlus = document.getElementById("devicePlus");
+    var deviceMinus = document.getElementById("deviceMinus");
+    var idx = 1;
+
+    devicePlus.addEventListener("click", function(){
+        $('#deviceBox').append('<input type="text" id="deviceId' + (idx + 1) + '" name="deviceId" class="form-control"/>');
+        idx = idx + 1;
+    });
+
+    deviceMinus.addEventListener("click", function(){
+        if(idx == 1)return;
+        var targetId = "#deviceId" + idx;
+        $('#deviceBox ' + targetId).remove();
+        idx = idx - 1;
+
+    });
+
+    var idxAdd = 1;
+
+    $("#devicePlusAdd").on("click", function () {
+        $('#deviceBoxAdd').append('<input type="text" id="deviceIdAdd' + (idxAdd + 1) + '" name="deviceId" class="form-control"/>');
+        idxAdd = idxAdd + 1;
+    });
+
+    $("#deviceMinusAdd").on("click", function(){
+        if(idxAdd == 1)return;
+       $("#deviceBoxAdd #deviceIdAdd" + idxAdd) .remove();
+       idxAdd = idxAdd - 1;
+    });
+
+    var idxDel = 1;
+
+    $("#devicePlusDel").on("click", function () {
+        $('#deviceBoxDel').append('<input type="text" id="deviceIdDel' + (idxDel + 1) + '" name="deviceId" class="form-control"/>');
+        idxDel = idxDel + 1;
+    });
+
+    $("#deviceMinusDel").on("click", function(){
+        if(idxDel == 1)return;
+        $("#deviceBoxDel #deviceIdDel" + idxDel) .remove();
+        idxDel = idxDel - 1;
+    });
+
+    var idxDelUser = 1;
+
+    $("#devicePlusDelUser").on("click", function () {
+        $('#deviceBoxDelUser').append('<input type="text" id="deviceIdDelUser' + (idxDelUser + 1) + '" name="deviceId" class="form-control"/>');
+        idxDelUser = idxDelUser + 1;
+    });
+
+    $("#deviceMinusDelUser").on("click", function(){
+        if(idxDelUser  == 1)return;
+        $("#deviceBoxDelUser #deviceIdDelUser" + idxDelUser) .remove();
+        idxDelUser = idxDelUser - 1;
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>스마트 릴레이</title>
+    <!-- Bootstrap CDN -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://use.fontawesome.com/releases/v5.2.0/js/all.js"></script>
+    <style>
+        @import url("https://fonts.googleapis.com/css?family=Poppins:400,500,600,700,800,900&display=swap");
+        *{
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body{
+            background-color: white;
+        }
+
+        h2{
+            margin-top: 40%;
+            text-align: center;
+            margin-left:10%;
+            margin-right:10%;
+            position: relative;
+            font-size: 2em;
+            font-weight: 900;
+            color: black;
+            z-index : 1;
+            overflow: hidden;
+        }
+
+        h2:before{
+            font-size: 2em;
+            font-weight: 900;
+            overflow: hidden;
+            color: ghostwhite;
+            content: '';
+            position:absolute;
+            left: 0;
+            width : 120%;
+            height : 100%;
+            background: linear-gradient(90deg, transparent 0%, white 5%, white 100%);
+            animation : animate 0.5s linear forwards;
+        }
+
+        @keyframes animate {
+            0%
+            {
+                left: 110%
+            }
+            100%{
+                left: -20%
+            }
+
+
+        }
+
+        h2 span{
+            color : #212529;
+        }
+
+
+    </style>
+</head>
+<body>
+<h2>Smart-Relay Now Loading...</h2>
+<script type="text/javascript" th:inline="javascript">
+    var message = [[${message}]];
+    var url = /*[[@{/user/lsec}]]*/ '';
+    var referer = [[${referer}]];
+    function tal(func) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'SMART RELAY',
+            text: message,
+        }).then(func);
+    }
+
+    function go(){
+        location.href = referer;
+    }
+
+    setTimeout(function () {
+        tal(go);
+    }, 500);
+</script>
+</body>
+</html>

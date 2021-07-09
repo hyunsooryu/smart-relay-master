@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>스마트릴레이</title>
+    <!-- Bootstrap CDN -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <style>
+
+
+
+        #part1{
+            display: inline-block;
+            text-align: left;
+            background-color:white;
+            border: 0px;
+            padding-left: 5px;
+            color:lightskyblue;
+            font-weight: bold;
+            box-shadow: ghostwhite;
+        }
+
+        #part2{
+            color: white;
+            display: inline-block;
+            text-align: right;
+        }
+
+        #bbttnn2{
+            background-color: red;
+            border-color : red;
+        }
+
+        #bbttnn3{
+            background-color: orange;
+            border-color : orange;
+        }
+
+        #part3{
+            border: none;
+        }
+
+        .custom-input{
+            background-color: whitesmoke;
+            border: 0.2px;
+            margin-bottom: 5px;
+        }
+
+        .custom-btn{
+            margin-left: 5px;
+            margin-right:3px;
+            border: 1px solid blue;
+            background-color: white;
+            color: blue;
+        }
+
+        .middle{
+            text-align: center;
+        }
+
+        .foooter{
+            position: absolute;
+
+            left: 0;
+
+            bottom: 0;
+
+            width: 100%;
+
+            padding: 15px 0;
+
+            text-align: center;
+
+            font-size: 13px;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- 상단 메뉴 부분 -->
+<nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top shadow-lg">
+    <a class="navbar-brand" th:href="@{/user/lsec}">SMART-RELAY</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ml-auto">
+
+            <li class="nav-item" th:if="${loginUser.isLoginFlg() == true}">
+                <a th:href="@{/user/lsec}" class="nav-link">메인화면</a>
+            </li>
+            <li class="nav-item" th:if="${loginUser.isLoginFlg() == false}">
+                <a th:href="@{/user/login}" class="nav-link">로그인</a>
+            </li>
+            <li class="nav-item" th:if="${loginUser.isLoginFlg() == true}">
+                <a th:href="@{/user/logout}" class="nav-link">로그아웃</a>
+            </li>
+
+        </ul>
+    </div>
+</nav>
+<!-- 게시글 리스트 -->
+<div class="container" style="margin-top:100px">
+
+    <div class="card" id="part3">
+        <div id="part1"><button id="bbttnn1" class="btn btn-primary">◀</button></div>
+    </div>
+    <div class="card shadow">
+        <div class="card-body middle">
+            <h3 th:text="${place}"></h3>
+            <h6 th:text="(${deviceId})"></h6>
+        </div>
+        <div class="card-body middle">
+            <button th:text="${nowStatus2}" id="autoMode3" class="btn btn-primary"></button>
+        </div>
+        <div class="card-body middle">
+            <button th:text="${nowStatus1}" id="autoMode2" class="btn btn-primary"></button>
+        </div>
+        <div class="card-body middle">
+            <button th:text="${nowStatus0}" id="autoMode1" class="btn btn-primary"></button>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" th:inline="javascript">
+    var back = [[${back}]];
+    var firstUrl = [[${firstUrl}]];
+    var secondUrl = [[${secondUrl}]];
+    var thirdUrl = [[${thirdUrl}]];
+    var modifyDelUrl = /*[[@{/modify/removeSmallSector}]]*/ '';
+    var modifyModifyUrl = /*[[@{/modify/modifySmallSector}]]*/ '';
+    var largeSector = decodeURI(location.search.split('largeSector=')[1]);
+    var smallSector = [[${place}]];
+
+    var history_back_btn = document.getElementById("bbttnn1");
+    history_back_btn.addEventListener("click", function(){
+        location.href = back;
+    });
+
+    var history_back_btn_1 = document.getElementById("autoMode1");
+    history_back_btn_1.addEventListener("click", function(){
+        location.href =firstUrl;
+    });
+
+    var history_back_btn_2 = document.getElementById("autoMode2");
+    history_back_btn_2.addEventListener("click", function(){
+        location.href = secondUrl;
+    });
+
+    var history_back_btn_3 = document.getElementById("autoMode3");
+    history_back_btn_3.addEventListener("click", function(){
+        location.href = thirdUrl;
+    });
+
+    function postItDelete() {
+        Swal.fire({
+            title: 'SMART RELAY',
+            text: '삭제 하시겠습니까?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '승인',
+            cancelButtonText: '취소',
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                postDelMaker(modifyDelUrl, largeSector, smallSector);
+            } else {
+                Swal.fire(
+                    'SMART RELAY',
+                    '취소 되었습니다.',
+                    'warning'
+                );
+            }
+        })
+    }
+
+    function postDelMaker(toUrl, largeSector, smallSector){
+        var newForm = document.createElement('form');
+        newForm.name = "newForm";
+        newForm.method = "post"
+        newForm.action = toUrl;
+        var input1 = document.createElement('input');
+        var input2 = document.createElement('input');
+        var input3 = document.createElement('input');
+        input1.setAttribute("type", "hidden");
+        input1.setAttribute("name","largeSector");
+        input1.setAttribute("value", largeSector);
+        input2.setAttribute("type", "hidden");
+        input2.setAttribute("name","smallSector");
+        input2.setAttribute("value", smallSector);
+        newForm.append(input1);
+        newForm.append(input2);
+        document.body.append(newForm);
+        newForm.submit();
+    }
+
+    function postModMaker(toUrl, largeSector, smallSector, newSmallSector){
+        var newForm = document.createElement('form');
+        newForm.name = "newForm";
+        newForm.method = "post"
+        newForm.action = toUrl;
+        var input1 = document.createElement('input');
+        var input2 = document.createElement('input');
+        var input3 = document.createElement('input');
+        input1.setAttribute("type", "hidden");
+        input1.setAttribute("name","largeSector");
+        input1.setAttribute("value", largeSector);
+        input2.setAttribute("type", "hidden");
+        input2.setAttribute("name","smallSector");
+        input2.setAttribute("value", smallSector);
+        input3.setAttribute("type", "hidden");
+        input3.setAttribute("name","newSmallSector");
+        input3.setAttribute("value", newSmallSector);
+        newForm.append(input1);
+        newForm.append(input2);
+        newForm.append(input3);
+        document.body.append(newForm);
+        newForm.submit();
+    }
+
+
+
+</script>
+</body>
+</html>
+
+
+
+
+
+

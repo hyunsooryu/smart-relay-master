@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>스마트 릴레이</title>
+    <!-- Bootstrap CDN -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+<!-- 상단 메뉴 부분 -->
+<nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top shadow-lg">
+    <a class="navbar-brand" th:href="@{/admin/main}">SMART-RELAY</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item" th:if="${adminUser.isLogin() == false}">
+                <a th:href="@{/admin/login}" class="nav-link">로그인</a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/admin/main}" class="nav-link">디바이스 등록</a>
+            </li>
+            <li class="nav-item" th:if="${adminUser.isLogin() == true}">
+                <a th:href="@{/admin/logout}" class="nav-link">로그아웃</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="container" style="margin-top:100px">
+    <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <div class="alert alert-danger" th:if="${#request.getAttribute('fail') == 'true'}">
+                        <h3>로그인 실패</h3>
+                        <p>아이디 비밀번호를 확인해주세요</p>
+                    </div>
+                    <form th:action="@{/admin/login_pro}" th:object="${adminUser}" method="post">
+                        <div class="form-group">
+                            <label for="user_id">아이디</label>
+                            <input type=text id="user_id" name="id" class="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="user_pw">비밀번호</label>
+                            <input type="password" id="user_pw" name="password" class="form-control"/>
+                        </div>
+                        <div class="form-group text-right">
+                            <button type="submit" class="btn btn-primary">로그인</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

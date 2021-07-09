@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bootstrap Example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<style>
+    .box{
+        background-color: gold;
+        margin-left: auto;
+        margin-right :auto;
+        text-align: center;
+        width:50%;
+        margin-top : 10px;
+    }
+
+</style>
+<body>
+
+<div class="container">
+
+    <div class="box">
+    <h1>device-1</h1>
+    <h2 id="ch1onOff">채널 1 전원 : <span id="ch1_onOff">off</span></h2>
+        <h2 id="nowMode1">채널 1 현재 모드 : <span id="ch1_mode"></span></h2>
+        <h4 id="ch1Scedule"></h4>
+    <h2 id="ch2onoff">채널 2 전원 : <span id="ch2_onOff">off</span></h2>
+    <h2 id="nowMode2">채널 2 현재 모드 : <span id="ch2_mode"></span></h2>
+        <h4 id="ch2Scedule"></h4>
+    <h2 id="ch3onOff">채널 3 전원 : <span id="ch3_onOff">off</span></h2>
+    <h2 id="nowMode3">채널 3 현재 모드 : <span id="ch3_mode"></span></h2>
+        <h4 id="ch3Scedule"></h4>
+
+
+        <buttion id="deviceButton">버튼 전기 연결</buttion>
+
+</div>
+    <script>
+        var status =  [
+            {
+                "mode": "0",
+                "schedule": "",
+                "currentState": 0
+            }
+            ,
+            {
+                "mode": "0",
+                "schedule": "",
+                "currentState": 0
+            },
+            {
+                "mode": "0",
+                "schedule": "",
+                "currentState": 0
+            }
+        ];
+
+
+        function makeRequest() {
+
+            const json = JSON.stringify(
+                [
+                    {
+                        "mode": "1",
+                        "schedule": "",
+                        "currentState": 1
+                    }
+                    ,
+                    {
+                        "mode": "0",
+                        "schedule": "",
+                        "currentState": 0
+                    },
+                    {
+                        "mode": "s",
+                        "schedule": "",
+                        "currentState": 1
+                    }
+                ]
+            );
+            console.log(json);
+
+            axios.post("http://15.164.240.79:10010/device/order/93D3", json, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            }).then((response=>{
+                console.log(response);
+                var data = response['data'];
+
+                if(data.length >= 3) {
+                    for (var i = 0; i < 3; i++) {
+                        var now_data = data[i];
+                        var mode = now_data['mode'];
+                        var schedule = now_data['schedule'];
+                        console.log(now_data);
+                        console.log(mode);
+
+                        if (mode == "1") {
+                            document.getElementById("ch" + (i + 1) + "_onOff").innerText = "on";
+                            status[i]['currentState'] = 1;
+                        } else if (mode == "0") {
+                            document.getElementById("ch" + (i + 1) + "_onOff").innerText = "off";
+                            status[i]['currentState'] = 0;
+                        } else if (mode == "s") {
+                            document.getElementById("ch" + (i + 1) + "_mode").innerText = "스케쥴모드";
+                            document.getElementById("ch" + (i + 1) + "Scedule").innerText = schedule;
+                            status[i]['mode'] = 's';
+                            status[i]['schedule'] = schedule;
+                        } else if (mode == "r") {
+                            document.getElementById("ch" + (i + 1) + "_mode").innerText = "반복 모드";
+                            document.getElementById("ch" + (i + 1) + "Scedule").innerText = schedule;
+                            status[i]['mode'] = 'r';
+                            status[i]['schedule'] = schedule;
+                        } else if (mode == "a") {
+                            document.getElementById("ch" + (i + 1) + "_mode").innerText = "오토 모드";
+                            status[i]['mode'] = 'a';
+                        }
+                    }
+                }
+            }));
+
+
+
+        }
+
+        document.getElementById("deviceButton").addEventListener("click", function(){
+            setInterval(function(){
+                makeRequest();
+            }, 10000);
+        })
+
+
+    </script>
+</body>
+</html>

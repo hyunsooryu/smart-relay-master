@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bootstrap Example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <form action="/app/">
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="switch1" name="example">
+            <label class="custom-control-label" for="switch1">스마트 릴레이 AUTO 모드 가동</label>
+        </div>
+        <br>
+
+    </form>
+    <button id = 'btn' type="submit" class="btn btn-primary">전송</button>
+    <button id = 'btn2' type="submit" class="btn btn-primary">전원종료</button>
+    <textarea id="target"></textarea>
+</div>
+    <script>
+        document.getElementById("btn").addEventListener("click", function(){
+            let val = document.getElementById('target').value;
+            axios.post('/app/mode/' + "test-" + val, {
+                'mode' : 'AUTO',
+                'startTime' : 0,
+                'endTime' : 0
+            }).then(response=>{
+                    console.log(response);
+                    if(response['data']['status'] == "500"){
+                        alert("해당 디바이스의 신호가 잡히지 않습니다. 전원을 켰는지 확인해주시기 바랍니다.");
+                    }else{
+                        alert("오토 모드 설정이 완료되었습니다.");
+                    }
+            }).catch(error=>{
+                console.log(error);
+            });
+        });
+
+        document.getElementById("btn2").addEventListener("click", function(){
+            let val = document.getElementById('target').value;
+            axios.post('/app/mode/' + "test-" + val, {
+                'mode' : 'OFF',
+                'startTime' : 0,
+                'endTime' : 0
+            }).then(response=>{
+                console.log(response);
+                if(response['data']['status'] == "500"){
+                    alert("해당 디바이스의 신호가 잡히지 않습니다. 전원을 켰는지 확인해주시기 바랍니다.");
+                }else{
+                    alert("종료 설정이 완료되었습니다.");
+                }
+            }).catch(error=>{
+                console.log(error);
+            });
+        });
+    </script>
+</body>
+</html>
