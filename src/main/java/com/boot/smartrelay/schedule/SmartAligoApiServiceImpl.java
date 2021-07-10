@@ -56,7 +56,7 @@ public class SmartAligoApiServiceImpl implements SmartAligoApiService{
 
         try {
             result = restTemplate.postForObject("https://apis.aligo.in/send/", formEntity, String.class);
-            System.out.println(result);
+
         }catch (Exception e){
             e.printStackTrace();
             log.info("ERROR MESSAGE");
@@ -81,24 +81,23 @@ public class SmartAligoApiServiceImpl implements SmartAligoApiService{
             return false;
         }
 
-        String msg = "[스마트릴레이] " + user.getLargeSector() + "->" + user.getSmallSector() + "(" + deviceId + ") 신호 없음.";
+        String msg = "[스마트릴레이] " + device.getLargeSector() + "->" + device.getSmallSector() + "(" + deviceId + ") 신호 없음.";
 
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        HttpEntity formEntity = new HttpEntity<>(makeEssentialParams(user, "[스마트릴레이]"), headers);
+        HttpEntity formEntity = new HttpEntity<>(makeEssentialParams(user, msg), headers);
 
         String result = "";
 
         try {
              result = restTemplate.postForObject("https://apis.aligo.in/send/", formEntity, String.class);
-             System.out.println(result);
         }catch (Exception e){
             e.printStackTrace();
             log.info("ERROR MESSAGE");
             return false;
         }
-        log.info(result);
+        log.info("api result : " + result);
 
         return true;
     }
@@ -116,12 +115,12 @@ public class SmartAligoApiServiceImpl implements SmartAligoApiService{
             return false;
         }
 
-        String msg = "[스마트릴레이] " + user.getLargeSector() + "->" + user.getSmallSector() + "(" + deviceId + ") 서비스 신호 잡힘.";
+        String msg = "[스마트릴레이] " + device.getLargeSector() + "->" + device.getSmallSector() + "(" + deviceId + ") 서비스 신호 잡힘.";
 
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        HttpEntity formEntity = new HttpEntity<>(makeEssentialParams(user, "[스마트릴레이]"), headers);
+        HttpEntity formEntity = new HttpEntity<>(makeEssentialParams(user, msg), headers);
 
         String result = "";
 
@@ -133,7 +132,8 @@ public class SmartAligoApiServiceImpl implements SmartAligoApiService{
             log.info("ERROR MESSAGE");
             return false;
         }
-        log.info(result);
+        log.info("api result : " + result);
+
         return true;
     }
 
@@ -144,12 +144,15 @@ public class SmartAligoApiServiceImpl implements SmartAligoApiService{
 
     private MultiValueMap<String, String> makeEssentialParams(User user, String msg){
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        System.out.println(smartAligoProperties.getApikey());
+
         params.add("key", smartAligoProperties.getApikey());
         params.add("user_id", smartAligoProperties.getId());
         params.add("sender", smartAligoProperties.getSender());
         params.add("receiver", receiverMaker(user.getPhoneNumberList()));
         params.add("msg", msg);
+        log.info("-----------------스마트릴레이 문자발송 --------------------");
+        log.info("msg : " + msg);
+        log.info("수신자 : " + user.getPhoneNumberList().toString());
         return params;
     }
 

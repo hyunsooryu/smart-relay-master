@@ -64,6 +64,7 @@ public class DeviceStatusMemoryRepository {
      */
     public boolean setDeviceOrder(String deviceId, List<Packet> packets, int channel){
        log.info("deviceId : " + deviceId + " channel : " + (channel + 1) + " is setting now ");
+       log.info("packets : " + packets.toString());
         try{
             //1. 오더 명령 캐시에 저장
             //TODO 패킷의 저장 방식의 변화 2021.07.01 채널에 대해 각각 설정이 가능하도록 수정

@@ -47,6 +47,7 @@
             background-color: whitesmoke;
             border: 0.2px;
             margin-bottom: 5px;
+            margin-right: 2px;
         }
 
         .custom-btn{
@@ -387,8 +388,8 @@
     var flg = true;
     var upTemplate = '    <tr id="q">\n' +
         '                    <td>' +
-        '<input placeholder="위치이름" id="newplace" name="place" class="custom-input" type="text"/>';
-
+        '<input placeholder="위치이름" id="newplace" name="place" class="custom-input" type="text"/>' +
+        '<input placeholder="디바이스" id="newDevice" name="deviceId" class="custom-input" type="text"/>'
     var deviceLists = [[${loginUser.getDeviceIdList}]];
     var options = '';
     if(deviceLists.length == 0){
@@ -407,7 +408,7 @@
     var bottomTemplate =  '<button type="button" id="send" onclick="postIt()" class="custom-btn">확인</button><button type="button" onclick="removeIt()"id="clear" class="custom-btn">취소</button></td>\n' +
         '                </tr>';
 
-    var template = upTemplate + optionTemplate + bottomTemplate;
+    var template = upTemplate + bottomTemplate;
 
 
     console.log(url);
@@ -437,7 +438,9 @@
         }).then(function(result){
             if(result.isConfirmed){
                 var value = document.getElementById("newplace").value;
-                if(value == ''){
+                var devId = document.getElementById("newDevice").value;
+
+                if(value == '' || devId == ''){
                     Swal.fire(
                         'SMART RELAY',
                         '정확하게 입력해주세요.',
@@ -445,6 +448,16 @@
                     );
                     return;
                 }
+
+                if(deviceLists.indexOf(devId) < 0){
+                    Swal.fire(
+                        'SMART RELAY',
+                        '할당되지 않은 디바이스입니다. 다시 입력해주세요',
+                        'warning'
+                    );
+                    return;
+                }
+
                 var newForm = document.createElement('form');
                 newForm.name = "newForm";
                 newForm.method = "post"
@@ -460,7 +473,7 @@
                 input2.setAttribute("value", value);
                 input3.setAttribute("type", "hidden");
                 input3.setAttribute("name","deviceId");
-                input3.setAttribute("value", document.getElementsByName("deviceId")[0].value);
+                input3.setAttribute("value", devId);
                 newForm.append(input1);
                 newForm.append(input2);
                 newForm.append(input3);
