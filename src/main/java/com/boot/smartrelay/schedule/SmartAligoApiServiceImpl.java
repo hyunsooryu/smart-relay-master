@@ -126,7 +126,6 @@ public class SmartAligoApiServiceImpl implements SmartAligoApiService{
 
         try {
             result = restTemplate.postForObject("https://apis.aligo.in/send/", formEntity, String.class);
-            System.out.println(result);
         }catch (Exception e){
             e.printStackTrace();
             log.info("ERROR MESSAGE");
