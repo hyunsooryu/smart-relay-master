@@ -149,6 +149,7 @@ public class SmartAligoApiServiceImpl implements SmartAligoApiService{
         params.add("sender", smartAligoProperties.getSender());
         params.add("receiver", receiverMaker(user.getPhoneNumberList()));
         params.add("msg", msg);
+        params.add("testmode_yn", "Y");
         log.info("-----------------스마트릴레이 문자발송 --------------------");
         log.info("msg : " + msg);
         log.info("수신자 : " + user.getPhoneNumberList().toString());
