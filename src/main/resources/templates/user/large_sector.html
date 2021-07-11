@@ -76,7 +76,26 @@
         </div>
     </div>
 </div>
+<div class="container-fluid bg-dark text-white fixed-bottom main_footer" style="margin-top:50px;padding-top:30px;padding-bottom:30px; margin-bottom: 0px;">
+    <div class="container">
+        <p>http://evercoding.org</p>
+        <p>Copyright © EVERCODING Co.,<L>   </L>td. ved</p>
+    </div>
+</div>
 <script type="text/javascript" th:inline="javascript">
+
+    if('ontouchstart' in window){
+        $(document).on('focus','input[type=text]', function(){
+            $('.main_footer').hide();
+        });
+
+        $(document).on('blur','input[type=text]', function(){
+            $('.main_footer').show();
+        });
+
+    }
+
+
     var flg = true;
     var template = '    <tr id="q">\n' +
         '                    <td><input placeholder="위치이름" id="newplace" name="place" class="custom-input" type="text"/><button type="button" id="send" onclick="postIt()" class="custom-btn">확인</button><button type="button" onclick="removeIt()"id="clear" class="custom-btn">취소</button></td>\n' +
@@ -129,12 +148,6 @@
     }
 
 </script>
-<div class="container-fluid bg-dark text-white fixed-bottom" style="margin-top:50px;padding-top:30px;padding-bottom:30px; margin-bottom: 0px;">
-    <div class="container">
-        <p>http://evercoding.org</p>
-        <p>Copyright © EVERCODING Co.,<L>   </L>td. All Rights Reserved</p>
-    </div>
-</div>
 </body>
 </html>
 
