@@ -21,6 +21,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -84,6 +85,10 @@ public class AdminController {
     public String main_pro(ModelMap model, @Valid @ModelAttribute("adminDeviceModel") AdminDeviceModel adminDeviceModel, BindingResult bindingResult){
 
         if(bindingResult.hasErrors()){
+            System.out.println("CHECK!!!");
+            bindingResult.getAllErrors().forEach(error->{
+                System.out.println(Arrays.asList(error.getCodes()).toString());
+            });
             model.addAttribute("message","아이디, 비밀번호, 디바이스 정보가 모두 기입되어 있어야 합니다. / 중복된 아이디가 있는지도 조심하십시오");
             return "main_fail";
         }
@@ -131,12 +136,19 @@ public class AdminController {
     }
 
     @PostMapping("/main_add_pro")
-    public String main_add_pro(ModelMap model, @Valid @ModelAttribute("adminDeviceModel") AdminDeviceModel modAdminDeviceModel, BindingResult bindingResult) {
+    public String main_add_pro(ModelMap model, @Valid @ModelAttribute("modAdminDeviceModel") AdminDeviceModel modAdminDeviceModel, BindingResult bindingResult) {
         if(bindingResult.hasErrors()){
-            model.addAttribute("message","아이디, 비밀번호, 디바이스 정보가 모두 기입되어 있어야 합니다. / 중복된 아이디값이 있는지 조심하십시오");
+
+            model.addAttribute("message","아이디, 디바이스 정보가 모두 기입되어 있어야 합니다. / 중복된 아이디값이나 디바이스 정보가 있는지 조심하십시오");
             return "main_fail";
         }
+        //Validator에서 스마트 디바이스 중복 체크 완료 후 넘어오기 때문에 다시 중복 체크 해줄 필요 X
 
+
+        //1. 스마트 릴레이 디바이스 DB에 저장
+        ResponseBox smartRelaySaved = adminService.saveSmartRelayDeviceIds(modAdminDeviceModel.getDeviceId());
+
+        //2. 어드민 관리 디바이스 DB에 맵핑 저장
         ResponseBox adminBox = adminService.addDeviceToUser(modAdminDeviceModel.getUserId(), modAdminDeviceModel.getDeviceId());
         if(!adminBox.isStatus()){
             model.addAttribute("message", adminBox.getMessage());
@@ -166,9 +178,10 @@ public class AdminController {
         webDataBinder.addValidators(adminValidator);
     }
 
-    @InitBinder("adminDeviceModel")
+    @InitBinder(value = {"adminDeviceModel", "modAdminDeviceModel"})
     public void initBinder2(WebDataBinder webDataBinder){
         webDataBinder.addValidators(adminDeviceModelValidator);
     }
+
 
 }

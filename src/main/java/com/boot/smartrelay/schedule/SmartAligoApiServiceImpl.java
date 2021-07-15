@@ -67,6 +67,35 @@ public class SmartAligoApiServiceImpl implements SmartAligoApiService{
         return true;
     }
 
+    @Override
+    public boolean sendAutoModeMsgMessage(String deviceId, String msg) {
+        Device device = findDeviceInfoByDeviceId(deviceId);
+        if(device == null){
+            return  false;
+        }
+
+        User user = userRepository.findUserById(device.getUserId());
+        if(user == null){
+            return false;
+        }
+
+        var headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        HttpEntity formEntity = new HttpEntity<>(makeEssentialParams(user, msg), headers);
+
+        String result = "";
+
+        try {
+            result = restTemplate.postForObject("https://apis.aligo.in/send/", formEntity, String.class);
+        }catch (Exception e){
+            e.printStackTrace();
+            log.info("ERROR MESSAGE");
+            return false;
+        }
+        log.info("api result : " + result);
+        return true;
+    }
 
     @Override
     public boolean sendNoSignalMessage(String deviceId) {
@@ -81,7 +110,7 @@ public class SmartAligoApiServiceImpl implements SmartAligoApiService{
             return false;
         }
 
-        String msg = "[스마트릴레이] " + device.getLargeSector() + "->" + device.getSmallSector() + "(" + deviceId + ") 신호 없음.";
+        String msg = "[스마트  릴레이] " + device.getLargeSector() + "->" + device.getSmallSector() + "(" + deviceId + ") 신호 없음.";
 
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);

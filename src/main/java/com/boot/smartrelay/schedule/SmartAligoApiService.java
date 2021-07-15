@@ -18,5 +18,7 @@ public interface SmartAligoApiService {
 
     boolean sendYesSignalMessage(String deviceId);
 
+    boolean sendAutoModeMsgMessage(String deviceId, String msg);
+
     Device findDeviceInfoByDeviceId(String deviceId);
 }

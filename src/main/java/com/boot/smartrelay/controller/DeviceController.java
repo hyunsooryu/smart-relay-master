@@ -3,6 +3,7 @@ import com.boot.smartrelay.beans.DeviceStatus;
 import com.boot.smartrelay.beans.Packet;
 import com.boot.smartrelay.beans.PacketList;
 import com.boot.smartrelay.beans.PacketWrapper;
+import com.boot.smartrelay.schedule.SmartAligoApiService;
 import com.boot.smartrelay.service.DeviceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,16 +26,29 @@ public class DeviceController {
 
     private final DeviceService deviceService;
 
+    private final SmartAligoApiService smartAligoApiService;
+
     @PostMapping(value = "/order/{deviceId}", consumes = "application/json", produces = "application/json")
     @ResponseBody
     List<Packet> connectionWithDevice(@PathVariable("deviceId") String deviceId, @RequestBody List<Packet> packets){
 
         log.info("packet 도착 - 커넥션 확인 with deviceId : " + deviceId);
-        //1. status 설정
+        //1. autoModeMsg 확인
+        String autoModeMsg = checkPacketHasAutoModeMsg(packets);
+
+        //2. status 설정
         deviceService.setDeviceStatus(deviceId , packets);
-        //2. if 새로운 order 가 있다면 get
+        //3. if 새로운 order 가 있다면 get
 
         List<Packet> result = deviceService.getOrderIfPresent(deviceId);
+
+        if(!autoModeMsg.equals("")){
+            boolean smartApiResult = smartAligoApiService.sendAutoModeMsgMessage(deviceId, autoModeMsg);
+            if(!smartApiResult){
+                log.info("deviceId : {}, 오토 모드 메시지 발신 실패", deviceId);
+            }
+        }
+
         return result;
     }
 
@@ -95,7 +109,8 @@ public class DeviceController {
 
 
     @GetMapping(value = "/user/autoMode")
-    public String autoMode(HttpServletRequest request, ModelMap model, @RequestParam("deviceId") String deviceId,  @RequestParam("channel") int channel){
+    public String autoMode(HttpServletRequest request, ModelMap model, @RequestParam("deviceId") String deviceId,  @RequestParam("channel") int channel,
+                           @RequestParam(name = "autoTimeLimit", required = false, defaultValue = "0") int autoTimeLimit){
 
         if(channel <= 0 || !StringUtils.hasLength(deviceId)){
             //TODO 예외처리 하기
@@ -107,7 +122,7 @@ public class DeviceController {
         String referer = request.getHeader("referer");
         model.addAttribute("referer", referer);
 
-        Packet packet = Packet.builder().mode("a").build();
+        Packet packet = Packet.builder().mode("a").autoTimeLimit(autoTimeLimit).build();
         deviceService.setNewOrder(deviceId, makePacketList(channel, packet), channel);
         model.addAttribute("message", "오토 모드 설정 완료되었습니다.");
         return "user/order_add_success";
@@ -162,7 +177,7 @@ public class DeviceController {
     }
 
 
-    private List<Packet> makePacketList(int channel, Packet packet){
+    private static List<Packet> makePacketList(int channel, Packet packet){
         List<Packet> packets = new ArrayList<>();
         for(int k = 1; k <= 3; k++){
             if(channel == k){
@@ -172,5 +187,15 @@ public class DeviceController {
             }
         }
         return packets;
+    }
+
+    private static String checkPacketHasAutoModeMsg(List<Packet> packets){
+        String msg = "";
+        for(int k = 0; k < 3; k++){
+            if(StringUtils.hasLength(packets.get(k).getAutoModeMsg())){
+                msg += ("채널" + (k+1) + ": " + packets.get(k).getAutoModeMsg() + " ");
+            }
+        }
+        return msg;
     }
 }

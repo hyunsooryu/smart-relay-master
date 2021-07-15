@@ -29,7 +29,10 @@ public class Packet {
    private String mode;
    private String schedule;
    private String period;
+   private String autoModeMsg;
+
    private int currentState;
+   private int autoTimeLimit;
 
    public void setSelf(Packet packet){
       this.mode = packet.getMode();

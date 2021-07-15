@@ -144,16 +144,19 @@
             <table class="table table-hover">
                 <tbody id="repeatModeTable">
                 <th class="w-50">
-                    오토모드
+                    오토모드 제한 시간 초 설정 / 기본 0초
                 </th>
                 <tr>
                     <td class="front">
-                       <button class="btn btn btn-primary" id="autoBtn">오토 모드 설정</button>
+                        <input type="text" placeholder="오토모드 제한 시간 초 설정" id="autoTimeLimit" value="0"/>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
+    </div>
+    <div class="card-body middle">
+        <button id="autoBtn" class="btn btn-primary">오토 모드 설정</button>
     </div>
     <div class="card shadow">
         <div class="card-body middle">
@@ -343,6 +346,30 @@
         });
     }
 
+    function autoModeConfirmMessage(msg, locationUrl){
+        Swal.fire({
+            title : 'SMART RELAY',
+            text: msg,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '확인',
+            cancelButtonText: '취소'
+        }).then(function(result){
+            if(result.isConfirmed){
+                var tmpAutoTimeLimit = $("#autoTimeLimit").val();
+                if(tmpAutoTimeLimit == "" || isNaN(tmpAutoTimeLimit)){
+                    Swal.fire('SMART RELAY', '숫자를 정확히 초단위로 입력해주세요', 'warning');
+                }else {
+                    location.href = locationUrl + "&autoTimeLimit=" + tmpAutoTimeLimit;
+                }
+            }else{
+                Swal.fire('SMART RELAY', '취소되었습니다.', 'success');
+            }
+        });
+    }
+
     function confirmMessage(msg, locationUrl){
         Swal.fire({
             title : 'SMART RELAY',
@@ -476,7 +503,7 @@
 
     var autoBtnUrl = /*[[@{/device/user/autoMode}]]*/ '';
     document.getElementById("autoBtn").addEventListener("click", function(){
-        confirmMessage('오토모드로 설정하시겠습니까?', autoBtnUrl + "?deviceId=" + deviceId + "&channel=" + channel);
+        autoModeConfirmMessage('오토모드로 설정하시겠습니까?', autoBtnUrl + "?deviceId=" + deviceId + "&channel=" + channel);
     });
 
     var onBtnUrl = /*[[@{/device/user/onMode}]]*/ '';
