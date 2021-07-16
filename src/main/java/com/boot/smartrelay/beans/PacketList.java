@@ -3,10 +3,11 @@ package com.boot.smartrelay.beans;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.redis.core.RedisHash;
 
 import java.util.List;
 
-@Document(collection = "packetList")
+@RedisHash(value = "packetList")
 @Getter
 @Setter
 @AllArgsConstructor

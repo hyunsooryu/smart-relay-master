@@ -54,7 +54,7 @@ public class DeviceController {
 
     @GetMapping(value = "/status/{deviceId}")
     @ResponseBody
-    DeviceStatus deviceStatus(@PathVariable("deviceId") String deviceId){
+    PacketList getPacketListForStatus(@PathVariable("deviceId") String deviceId){
         return deviceService.getDeviceStatus(deviceId);
     }
 

@@ -36,22 +36,22 @@ public class DeviceStatusMemoryRepository {
      * @param deviceId
      * @return
      */
-    public DeviceStatus getDeviceStatus(String deviceId){
-        DeviceStatus deviceStatus = null;
+    public PacketList getDeviceStatus(String deviceId){
+        PacketList packetList = null;
         try{
-           deviceStatus =  deviceStatusRedisRepository.findById(deviceId).orElse(null);
+           packetList =  deviceStatusRedisRepository.findById(deviceId).orElse(null);
         }catch (Exception e){
             log.error("deviceId : {} cache 조회 실패 {}", deviceId);
         }
-        return deviceStatus;
+        return packetList;
     }
 
-    public boolean setDeviceStatus(DeviceStatus deviceStatus){
+    public boolean setDeviceStatus(PacketList packetList){
         try{
-            DEVICE_TIME_TABLE.put(deviceStatus.getDeviceId(), deviceStatus.getLastSec());
-            deviceStatusRedisRepository.save(deviceStatus);
+            DEVICE_TIME_TABLE.put(packetList.getDeviceId(), Instant.now().getEpochSecond());
+            deviceStatusRedisRepository.save(packetList);
         }catch (Exception e){
-            log.error("deviceId : {} cache 작성 실패 {}", deviceStatus.getDeviceId());
+            log.error("deviceId : {} cache 작성 실패 {}", packetList.getDeviceId());
             return false;
         }
         return true;
@@ -120,16 +120,6 @@ public class DeviceStatusMemoryRepository {
         onOffDevices.add(onDevices);
         onOffDevices.add(offDevices);
         return onOffDevices;
-    }
-
-    public PacketList getLastOrderByDeviceId(String deviceId){
-        PacketList packetList = null;
-        try{
-            packetList = mongoTemplate.findById(deviceId, PacketList.class, CollectionBox.PACKET_LIST_COLLECTION);
-        }catch(Exception e){
-
-        }
-        return packetList;
     }
 
 }

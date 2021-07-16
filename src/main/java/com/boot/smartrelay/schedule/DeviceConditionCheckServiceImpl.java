@@ -67,11 +67,6 @@ public class DeviceConditionCheckServiceImpl implements DeviceConditionCheckServ
             }
             ON_DEVICE_MAP.put(deviceId, false);
         }
-
-        if(off.size() >= 1) {
-            mongoTemplate.remove(Query.query(where("deviceId").in(off)), PacketList.class, CollectionBox.PACKET_LIST_COLLECTION);
-        }
-
     }
 
     public boolean checkIsNowAliveDevice(String deviceId){

@@ -22,27 +22,8 @@ public class DeviceServiceImpl implements DeviceService {
 
     @Override
     public boolean setDeviceStatus(String deviceId, List<Packet> packets) {
-        DeviceStatus deviceStatus = new DeviceStatus();
-        //1. 디바이스 아이디 설정
-        deviceStatus.setDeviceId(deviceId);
-
-        //2. 마지막 커넥션 시간 갱신
-        deviceStatus.setLastSec(Instant.now().getEpochSecond());
-
-        //3. 디바이스 패킷 중  currentState 갱신
-        List<Integer> currentStates = new ArrayList<>();
-        List<String> modes = new ArrayList<>();
-        int sizeOfPackets = packets.size();
-        for(int channel = 0; channel < sizeOfPackets; channel++){
-            Packet packet = packets.get(channel);
-            currentStates.add(packet.getCurrentState());
-            modes.add(packet.getMode());
-        }
-
-        deviceStatus.setStatus(currentStates);
-        deviceStatus.setMode(modes);
-
-        boolean setResult = deviceStatusMemoryRepository.setDeviceStatus(deviceStatus);
+        PacketList packetListForStatus = PacketList.builder().deviceId(deviceId).packets(packets).build();
+        boolean setResult = deviceStatusMemoryRepository.setDeviceStatus(packetListForStatus);
         return setResult;
     }
 
@@ -59,14 +40,9 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public DeviceStatus getDeviceStatus(String deviceId) {
-        DeviceStatus deviceStatus = deviceStatusMemoryRepository.getDeviceStatus(deviceId);
-        return deviceStatus == null ? new DeviceStatus() : deviceStatus;
-    }
-
-    @Override
-    public PacketList getLastOrderByDeviceId(String deviceId) {
-        return deviceStatusMemoryRepository.getLastOrderByDeviceId(deviceId);
+    public PacketList getDeviceStatus(String deviceId) {
+        PacketList packetListForStatus = deviceStatusMemoryRepository.getDeviceStatus(deviceId);
+        return packetListForStatus == null ? new PacketList() : packetListForStatus;
     }
 
     @Override

@@ -13,11 +13,9 @@ public interface DeviceService {
 
     boolean setNewOrder(String deviceId, List<Packet> order, int channel);
 
-    DeviceStatus getDeviceStatus(String deviceId);
+    PacketList getDeviceStatus(String deviceId);
 
     List<Packet> getOrderIfPresent(String deviceId);
-
-    PacketList getLastOrderByDeviceId(String deviceId);
 
     boolean scheduledupcheck(String schedule) throws ParseException;
 }

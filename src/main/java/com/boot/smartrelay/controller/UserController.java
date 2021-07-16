@@ -2,6 +2,7 @@ package com.boot.smartrelay.controller;
 
 
 import com.boot.smartrelay.beans.*;
+import com.boot.smartrelay.repository.DeviceStatusMemoryRepository;
 import com.boot.smartrelay.repository.UserRepository;
 import com.boot.smartrelay.schedule.DeviceConditionCheckService;
 import com.boot.smartrelay.service.AdminService;
@@ -39,8 +40,6 @@ public class UserController {
 
     final DeviceConditionCheckService deviceConditionCheckService;
 
-
-
     @Resource(name="loginUser")
     private User loginUser;
 
@@ -49,8 +48,6 @@ public class UserController {
         if(loginUser.isLoginFlg()){
             return "user/login_try";
         }
-
-
 
         model.addAttribute("loginUser", loginUser);
         model.addAttribute("fail", fail);
@@ -130,7 +127,38 @@ public class UserController {
                 continue;
             }
 
-            DeviceStatus deviceStatus = deviceService.getDeviceStatus(device.getDeviceId());
+            String deviceId = device.getDeviceId();
+
+            PacketList packetListForStatus = deviceService.getDeviceStatus(deviceId);
+
+            if(packetListForStatus == null || packetListForStatus.getPackets() == null){
+                tmpList.add("X");
+                deviceStatueMap.put(device.getSmallSector(), tmpList);
+                continue;
+            }
+
+            List<Packet> packets = packetListForStatus.getPackets();
+
+            DeviceStatus deviceStatus = new DeviceStatus();
+            //1. 디바이스 아이디 설정
+            deviceStatus.setDeviceId(deviceId);
+
+            //2. 마지막 커넥션 시간 갱신
+           // deviceStatus.setLastSec(Instant.now().getEpochSecond());
+
+            //3. 디바이스 패킷 중  currentState 갱신
+            List<Integer> currentStates = new ArrayList<>();
+            List<String> modes = new ArrayList<>();
+            int sizeOfPackets = packets.size();
+            for(int channel = 0; channel < sizeOfPackets; channel++){
+                Packet packet = packets.get(channel);
+                currentStates.add(packet.getCurrentState());
+                modes.add(packet.getMode());
+            }
+
+            deviceStatus.setStatus(currentStates);
+            deviceStatus.setMode(modes);
+
             String status = "N";
             if(deviceStatus.getStatus() != null && deviceStatus.getMode() != null) {
                 for (int k = 0; k < 3; k++) {
@@ -155,6 +183,7 @@ public class UserController {
                 }
             }
             Collections.reverse(tmpList);
+
             deviceStatueMap.put(device.getSmallSector(), tmpList);
         }
 
@@ -316,25 +345,37 @@ public class UserController {
             return "user/detail_fail";
         }
 
+        PacketList packetList = deviceService.getDeviceStatus(deviceId);
 
-        /*
-        PacketList packetList = deviceService.getLastOrderByDeviceId(deviceId);
-        List<Packet> packets = new ArrayList<>();
+        if(packetList == null || packetList.getPackets() == null){
+            model.addAttribute("message", "디바이스의 전원을 확인해주세요. / 전원을 켠 1분 후부터 사용가능합니다.");
+            model.addAttribute("ls", largeSector);
+            return "user/detail_fail";
+        }
 
-        if(packetList != null){
-            if(packetList.getPackets() != null) {
-                packets = packetList.getPackets();
+        List<Packet> recentPackets = packetList.getPackets();
+        int len = recentPackets.size();
+        int targetNo = -1;
+        try {
+            targetNo = Integer.parseInt(no) - 1;
+        }catch (Exception e){
+
+        }
+
+
+        if(targetNo >=0) {
+            Packet recentPacket = recentPackets.get(targetNo);
+            String type = recentPacket.getMode();
+            //1. autoModeLimit 설정
+            model.addAttribute("autoTimeLimitVal",recentPacket.getAutoTimeLimit());
+            //2. repeatMode 시간 설정 or 스케쥴 시간 설정
+            if("r".equals(type)) {
+                model.addAttribute("repeatModeVal", recentPacket.getSchedule());
+            }
+            else if("s".equals(type)) {
+                model.addAttribute("scheduleModeVal", recentPacket.getSchedule());
             }
         }
-
-        int _no = Integer.parseInt(no);
-        System.out.println(_no);
-        _no -= 1;
-        if(_no < packets.size()){
-            model.addAttribute("packets", packets.get(_no));
-            System.out.println(packets.get(_no));
-        }
-        */
 
         model.addAttribute("deviceId", deviceId);
         model.addAttribute("loginUser", loginUser);
@@ -390,14 +431,40 @@ public class UserController {
             return "user/detail_fail";
         }
 
-
-
-
-
         /**
          * 2. 디바이스 정보 설정
          */
-        DeviceStatus deviceStatus = deviceService.getDeviceStatus(deviceId);
+        PacketList packetListForStatus = deviceService.getDeviceStatus(deviceId);
+
+        List<Packet> packets = packetListForStatus.getPackets();
+
+        if(packetListForStatus == null || packetListForStatus.getPackets() == null){
+            model.addAttribute("message", "디바이스의 전원을 확인해주세요. / 전원을 켠 1분 후부터 사용가능합니다.");
+            model.addAttribute("ls", largeSector);
+            return "user/detail_fail";
+        }
+
+
+        DeviceStatus deviceStatus = new DeviceStatus();
+        //1. 디바이스 아이디 설정
+        deviceStatus.setDeviceId(deviceId);
+
+        //2. 마지막 커넥션 시간 갱신
+        //deviceStatus.setLastSec(Instant.now().getEpochSecond());
+
+        //3. 디바이스 패킷 중  currentState 갱신
+        List<Integer> currentStates = new ArrayList<>();
+        List<String> modes = new ArrayList<>();
+        int sizeOfPackets = packets.size();
+        for(int channel = 0; channel < sizeOfPackets; channel++){
+            Packet packet = packets.get(channel);
+            currentStates.add(packet.getCurrentState());
+            modes.add(packet.getMode());
+        }
+
+        deviceStatus.setStatus(currentStates);
+        deviceStatus.setMode(modes);
+
 
         for(int k = 0; k < 3; k++){
             model.addAttribute("nowStatus" + k, (k + 1) + "번 릴레이 채널 정보없음");

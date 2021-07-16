@@ -328,11 +328,80 @@
     </div>
 </div>
 <script type="text/javascript" th:inline="javascript">
+
+        function scheduleHtmlMaker(str){
+        return
+        '<tr><td class="front">' +
+        '<input class="day" type="text" placeholder="00" value=' + str.slice(0, 2) +
+
+        '/>:<input class="day" type="text" placeholder="00" value=' + str.slice(2, 4) +
+        '/> ~' +
+        '<input class="day" type="text" placeholder="00" value=' + str.slice(4, 6) +
+        '/>:<input class="day" type="text" placeholder="00" value=' + str.slice(6, 8) +
+        '/>' +
+        '</td>' +
+        '<td class="back">' +
+        '<button class="del btn btn-primary" onclick="killMySelf(this)">삭제</button>' +
+        '</td>' +
+        '</tr>';
+    }
+
+
     var url = "";
     var channel = [[${no}]];
     var deviceId = [[${deviceId}]];
 
     var repeatModeUrl = /*[[@{/device/user/repeatMode}]]*/ '';
+
+    var autoTimeLimitVal = [[${autoTimeLimitVal}]];
+    var repeatModeVal = [[${repeatModeVal}]];
+    var scheduleModeVal = [[${scheduleModeVal}]];
+    var repeatModeFirstVal = "";
+    var repeatModeSecondVal = "";
+    var scheduleModeArray = [];
+
+    if(autoTimeLimitVal != null){
+        $("#autoTimeLimit").val(autoTimeLimitVal);
+    }
+
+    if(repeatModeVal != null){
+        if(repeatModeVal.length == 4){
+            $("#firstNum").val(repeatModeVal.slice(0, 2));
+            $("#secondNum").val(repeatModeVal.slice(2, 4));
+        }
+    }
+    if(scheduleModeVal != null){
+        var comp = "\/";
+        if(scheduleModeVal.indexOf("\/") < 0){
+            comp = "/";
+        }
+        var tmpScheduleModeArray = scheduleModeVal.split(comp);
+        if(tmpScheduleModeArray.length == 7){
+            scheduleModeArray = tmpScheduleModeArray;
+        }
+        scheduleModeArray.forEach(function(str, idx){
+            if(str != "0" && str.length > 0) {
+                str.split(',').forEach(function(timeVal, ldx){
+                    $("#w" + (idx + 1)).append(
+                        '<tr><td class="front">' +
+                        '<input class="day" type="text" placeholder="00" value=' + timeVal.slice(0, 2) +
+
+                        '>:<input class="day" type="text" placeholder="00" value=' + timeVal.slice(2, 4) +
+                        '> ~' +
+                        '<input class="day" type="text" placeholder="00" value=' + timeVal.slice(4, 6) +
+                        '>:<input class="day" type="text" placeholder="00" value=' + timeVal.slice(6, 8) +
+                        '>' +
+                        '</td>' +
+                        '<td class="back">' +
+                        '<button class="del btn btn-primary" onclick="killMySelf(this)">삭제</button>' +
+                        '</td>' +
+                        '</tr>'
+                    );
+                });
+            }
+        });
+    }
+
 
     repeatModeSave.addEventListener("click", function(){
         postRepeatItem();
@@ -493,12 +562,10 @@
         var me = e;
         var la = me.parentElement;
         var te = la.parentElement;
-        console.log(te);
         te.remove();
     }
 
     var packets = [[${packets}]];
-    console.log(packets);
 
 
     var autoBtnUrl = /*[[@{/device/user/autoMode}]]*/ '';

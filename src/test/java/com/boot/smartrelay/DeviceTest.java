@@ -72,12 +72,6 @@ public class DeviceTest {
         deviceService.setDeviceStatus("device-1", packets);
     }
 
-    @Test
-    void readDeviceStatus(){
-        DeviceStatus deviceStatus = repository.getDeviceStatus("device-1");
-        System.out.println(deviceStatus.getDeviceId());
-        System.out.println(deviceStatus.getStatus().toString());
-        System.out.println(deviceStatus.getLastSec());
-    }
+
 
 }
