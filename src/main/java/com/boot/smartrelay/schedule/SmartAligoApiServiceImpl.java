@@ -110,7 +110,7 @@ public class SmartAligoApiServiceImpl implements SmartAligoApiService{
             return false;
         }
 
-        String msg = "[스마트  릴레이] " + device.getLargeSector() + "->" + device.getSmallSector() + "(" + deviceId + ") 신호 없음.";
+        String msg = "[스마트  릴레이] " + device.getLargeSector() + "->" + device.getSmallSector() + "(" + deviceId + ") 연결 해제되었습니다.";
 
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -144,7 +144,7 @@ public class SmartAligoApiServiceImpl implements SmartAligoApiService{
             return false;
         }
 
-        String msg = "[스마트릴레이] " + device.getLargeSector() + "->" + device.getSmallSector() + "(" + deviceId + ") 서비스 신호 잡힘.";
+        String msg = "[스마트릴레이] " + device.getLargeSector() + "->" + device.getSmallSector() + "(" + deviceId + ") 연결 되었습니다.";
 
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
