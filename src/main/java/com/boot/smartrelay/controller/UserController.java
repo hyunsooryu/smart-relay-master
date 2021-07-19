@@ -171,11 +171,23 @@ public class UserController {
                     if(!StringUtils.isEmpty(deviceStatus.getMode().get(k))){
                         String tmp = deviceStatus.getMode().get(k);
                         if(tmp.equals("a")){
-                            status = "A";
+                            if(deviceStatus.getStatus().get(k) > 0){
+                                status = "A1";
+                            }else{
+                                status = "A0";
+                            }
                         }else if(tmp.equals("s")){
-                            status = "S";
+                            if(deviceStatus.getStatus().get(k) > 0){
+                                status = "S1";
+                            }else{
+                                status = "S0";
+                            }
                         }else if(tmp.equals("r")){
-                            status = "R";
+                            if(deviceStatus.getStatus().get(k) > 0){
+                                status = "R1";
+                            }else{
+                                status = "R0";
+                            }
                         }
                     }
 

@@ -186,7 +186,13 @@
                         </div>
                         <div th:if="${deviceStatusMap.get(place) != null && deviceStatusMap.get(place).size() > 1}" class="right-half">
                                 <div class = "right-block"  th:each="status  : ${deviceStatusMap.get(place)}">
-                                    <span th:if='${!status.equals("M0") && !status.equals("M1")}' th:text="${status}"></span>
+                                    <!--<span th:if='${!status.equals("M0") && !status.equals("M1")}' th:text="${status}"></span>-->
+                                    <span class = "a0" th:if='${status.equals("A0")}' th:text="${status}"></span>
+                                    <span class = "a1" th:if='${status.equals("A1")}' th:text="${status}"></span>
+                                    <span class = "s0" th:if='${status.equals("S0")}' th:text="${status}"></span>
+                                    <span class = "s1" th:if='${status.equals("S1")}' th:text="${status}"></span>
+                                    <span class = "r0" th:if='${status.equals("R0")}' th:text="${status}"></span>
+                                    <span class = "r1" th:if='${status.equals("R1")}' th:text="${status}"></span>
                                     <span class = "m0" th:if='${status.equals("M0")}' th:text="${status}"></span>
                                     <span class = "m1" th:if='${status.equals("M1")}' th:text="${status}"></span>
                                 </div>
@@ -214,6 +220,24 @@
         $('.m0').text('M');
         $('.m1').parent().css('backGroundColor', 'green');
         $('.m1').text('M');
+
+        $('.a0').parent().css('background-color', 'red');
+        $('.a0').parent().css('border', '1px solid red');
+        $('.a0').text('A');
+        $('.a1').parent().css('backGroundColor', 'green');
+        $('.a1').text('A');
+
+        $('.s0').parent().css('background-color', 'red');
+        $('.s0').parent().css('border', '1px solid red');
+        $('.s0').text('S');
+        $('.s1').parent().css('backGroundColor', 'green');
+        $('.s1').text('S');
+
+        $('.r0').parent().css('background-color', 'red');
+        $('.r0').parent().css('border', '1px solid red');
+        $('.r0').text('R');
+        $('.r1').parent().css('backGroundColor', 'green');
+        $('.r1').text('R');
     });
 
 
