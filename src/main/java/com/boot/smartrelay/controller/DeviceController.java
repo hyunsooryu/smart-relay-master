@@ -41,6 +41,13 @@ public class DeviceController {
         //3. if 새로운 order 가 있다면 get
 
         List<Packet> result = deviceService.getOrderIfPresent(deviceId);
+        if(result.size() == 0){
+            log.info("{} 디바이스 : 세팅되어 있는 오더가 없습니다.", deviceId);
+        }
+        if(result.size() > 0){
+            log.info("{} 디바이스 세팅되어 있는 오더 : {}" ,deviceId, result.toString());
+        }
+
 
         if(!autoModeMsg.equals("")){
             boolean smartApiResult = smartAligoApiService.sendAutoModeMsgMessage(deviceId, autoModeMsg);
