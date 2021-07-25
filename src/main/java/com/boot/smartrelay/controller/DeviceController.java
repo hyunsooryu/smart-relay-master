@@ -49,6 +49,7 @@ public class DeviceController {
         }
 
 
+        log.info("설정된 오토 모드 메시지 : "  + autoModeMsg);
         if(!autoModeMsg.equals("")){
             boolean smartApiResult = smartAligoApiService.sendAutoModeMsgMessage(deviceId, autoModeMsg);
             if(!smartApiResult){
@@ -200,7 +201,10 @@ public class DeviceController {
         String msg = "";
         for(int k = 0; k < 3; k++){
             if(StringUtils.hasLength(packets.get(k).getAutoModeMsg())){
+                log.info("채널 " + (k + 1) + " 오토 모드 메시지 확인 : " + packets.get(k).getAutoModeMsg());
                 msg += ("채널" + (k+1) + ": " + packets.get(k).getAutoModeMsg() + " ");
+            }else{
+                log.info("채널 " + (k + 1) + " 오토 모드 메시지 없음");
             }
         }
         return msg;
