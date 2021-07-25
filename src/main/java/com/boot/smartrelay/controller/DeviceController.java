@@ -41,15 +41,12 @@ public class DeviceController {
         //3. if 새로운 order 가 있다면 get
 
         List<Packet> result = deviceService.getOrderIfPresent(deviceId);
-        if(result.size() == 0){
-            log.info("{} 디바이스 : 세팅되어 있는 오더가 없습니다.", deviceId);
-        }
+
         if(result.size() > 0){
             log.info("{} 디바이스 세팅되어 있는 오더 : {}" ,deviceId, result.toString());
         }
 
 
-        log.info("설정된 오토 모드 메시지 : "  + autoModeMsg);
         if(!autoModeMsg.equals("")){
             boolean smartApiResult = smartAligoApiService.sendAutoModeMsgMessage(deviceId, autoModeMsg);
             if(!smartApiResult){
@@ -201,10 +198,7 @@ public class DeviceController {
         String msg = "";
         for(int k = 0; k < 3; k++){
             if(StringUtils.hasLength(packets.get(k).getAutoModeMsg())){
-                log.info("채널 " + (k + 1) + " 오토 모드 메시지 확인 : " + packets.get(k).getAutoModeMsg());
                 msg += ("채널" + (k+1) + ": " + packets.get(k).getAutoModeMsg() + " ");
-            }else{
-                log.info("채널 " + (k + 1) + " 오토 모드 메시지 없음");
             }
         }
         return msg;
