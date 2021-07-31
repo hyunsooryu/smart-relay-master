@@ -3,6 +3,7 @@ import com.boot.smartrelay.beans.DeviceStatus;
 import com.boot.smartrelay.beans.Packet;
 import com.boot.smartrelay.beans.PacketList;
 import com.boot.smartrelay.beans.PacketWrapper;
+import com.boot.smartrelay.config.DeviceSettingProperties;
 import com.boot.smartrelay.schedule.SmartAligoApiService;
 import com.boot.smartrelay.service.DeviceService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,8 @@ public class DeviceController {
     private final DeviceService deviceService;
 
     private final SmartAligoApiService smartAligoApiService;
+
+    private final DeviceSettingProperties deviceSettingProperties;
 
     @PostMapping(value = "/order/{deviceId}", consumes = "application/json", produces = "application/json")
     @ResponseBody
@@ -165,6 +168,21 @@ public class DeviceController {
         return "user/order_add_success";
     }
 
+    /**
+     * 2021.08.01 신규 컨트롤러 개발 / 업데이트 모드
+     * ver 1.3
+     */
+
+    @GetMapping(value = "/user/updateMode")
+    public String onMode(HttpServletRequest request, ModelMap model, @RequestParam("deviceId") String deviceId) {
+        String referer = request.getHeader("referer");
+        model.addAttribute("referer", referer);
+        Packet packet = Packet.builder().mode("u").period(deviceSettingProperties.getVersion()).build();
+        deviceService.setNewOrder(deviceId, makePacketList(1, packet), 1);
+        model.addAttribute("message", "업데이트 설정이 완료되었습니다.");
+        return "user/order_add_success";
+    }
+
     @GetMapping(value = "/user/repeatMode")
     public String repeatMode(HttpServletRequest request, ModelMap model, @RequestParam("deviceId") String deviceId, @RequestParam("channel") int channel, @RequestParam("schedule") String schedule){
         if(channel <= 0 || !StringUtils.hasLength(deviceId)){
@@ -180,7 +198,6 @@ public class DeviceController {
         model.addAttribute("message", "반복 모드 설정이 완료되었습니다.");
         return "user/order_add_success";
     }
-
 
     private static List<Packet> makePacketList(int channel, Packet packet){
         List<Packet> packets = new ArrayList<>();

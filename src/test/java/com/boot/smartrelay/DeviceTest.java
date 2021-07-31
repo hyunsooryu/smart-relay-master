@@ -20,7 +20,7 @@ public class DeviceTest {
 
     @Autowired
     DeviceStatusMemoryRepository repository;
-
+    /**
     @Test
     void insertOrder(){
        List<Packet> packets = new ArrayList<>();
@@ -72,6 +72,6 @@ public class DeviceTest {
         deviceService.setDeviceStatus("device-1", packets);
     }
 
-
+    **/
 
 }
