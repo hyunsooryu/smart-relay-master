@@ -79,10 +79,11 @@ public class SmartAligoApiServiceImpl implements SmartAligoApiService{
             return false;
         }
 
+        String msgWrapped = device.getLargeSector() + "->" + device.getSmallSector() + "(" + deviceId + ") " + msg;
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        HttpEntity formEntity = new HttpEntity<>(makeEssentialParams(user, msg), headers);
+        HttpEntity formEntity = new HttpEntity<>(makeEssentialParams(user, msgWrapped), headers);
 
         String result = "";
 
